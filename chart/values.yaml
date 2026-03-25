@@ -11,7 +11,12 @@ awsSecretAccessKey: null
 # The name of the secret to create containing the Docker credentials for ECR.
 dockerSecretName: k8s-ecr-login-renew-docker-secret
 
-# Comma-separated list of target Namespaces to create docker secrets in. 
+# Set to true to target ALL namespaces (minus excluded ones).
+# When enabled, targetNamespace is ignored.
+allNamespaces: false
+
+# Comma-separated list of target Namespaces to create docker secrets in.
+# Ignored when allNamespaces is true.
 targetNamespace: "default"
 excludeNamespace: null
 
@@ -21,7 +26,7 @@ excludeNamespace: null
 registries: null
 
 cronjob:
-  dockerImage: nabsul/k8s-ecr-login-renew:v1.7.1
+  dockerImage: 654654203227.dkr.ecr.eu-west-1.amazonaws.com/k8s-ecr-login-renew:1.0.0
 
   # the schedule of the cronjob
   schedule: "0 */6 * * *"

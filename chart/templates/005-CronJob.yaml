@@ -37,6 +37,8 @@ spec:
           serviceAccountName: {{ required "Service account name is required" .Values.names.serviceAccount }}
           terminationGracePeriodSeconds: {{ required "Termination grace period is required" .Values.cronjob.terminationGracePeriodSeconds }}
           restartPolicy: Never
+          imagePullSecrets:
+          - name: {{ .Values.dockerSecretName }}
           containers:
           - name: k8s-ecr-login-renew
             imagePullPolicy: IfNotPresent
@@ -59,10 +61,14 @@ spec:
             - name: DOCKER_SECRET_NAME
               value: {{ required "Secret name for Docker credentials is required" .Values.dockerSecretName }}
             - name: TARGET_NAMESPACE
-              value: {{ required "Target namespace is required" .Values.targetNamespace | quote }}
+{{- if .Values.allNamespaces }}
+              value: "*"
+{{- else }}
+              value: {{ required "Target namespace is required (or set allNamespaces: true)" .Values.targetNamespace | quote }}
+{{- end }}
 {{- if .Values.excludeNamespace }}
             - name: EXCLUDE_NAMESPACE
-              value: {{ required "Target namespace is required" .Values.excludeNamespace | quote }}
+              value: {{ .Values.excludeNamespace | quote }}
 {{- end }}
 {{- if .Values.registries }}
             - name: DOCKER_REGISTRIES
