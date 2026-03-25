@@ -89,6 +89,29 @@ func createSecret(name string) *coreV1.Secret {
 	return &secret
 }
 
+func PatchDefaultServiceAccount(namespace, secretName string) error {
+	client, err := GetClient()
+	if err != nil {
+		return err
+	}
+
+	sa, err := client.CoreV1().ServiceAccounts(namespace).Get(context.TODO(), "default", metaV1.GetOptions{})
+	if err != nil {
+		return err
+	}
+
+	// Check if imagePullSecret already exists
+	for _, s := range sa.ImagePullSecrets {
+		if s.Name == secretName {
+			return nil
+		}
+	}
+
+	sa.ImagePullSecrets = append(sa.ImagePullSecrets, coreV1.LocalObjectReference{Name: secretName})
+	_, err = client.CoreV1().ServiceAccounts(namespace).Update(context.TODO(), sa, metaV1.UpdateOptions{})
+	return err
+}
+
 func UpdatePassword(namespace, name, username, password string, servers []string) error {
 	client, err := GetClient()
 	if nil != err {

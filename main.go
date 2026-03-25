@@ -55,10 +55,19 @@ func main() {
 		} else {
 			fmt.Println("success")
 		}
+
+		fmt.Printf("Patching default service account in namespace [%s]... ", ns)
+		err = k8s.PatchDefaultServiceAccount(ns, name)
+		if nil != err {
+			fmt.Printf("failed: %s\n", err)
+			failed = true
+		} else {
+			fmt.Println("success")
+		}
 	}
 
 	if failed {
-		panic(errors.New("failed to create one of more Docker login secrets"))
+		panic(errors.New("failed to create one or more Docker login secrets"))
 	}
 
 	fmt.Println("Job complete.")
